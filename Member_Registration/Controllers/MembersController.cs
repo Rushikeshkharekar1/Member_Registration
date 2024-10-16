@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Microsoft.EntityFrameworkCore; // Make sure to include this for Include
+using Microsoft.EntityFrameworkCore;
 using Member_Registration.Models;
 
 namespace Member_Registration.Controllers
@@ -15,18 +15,42 @@ namespace Member_Registration.Controllers
             _context = context;
         }
 
-        // Action to show all active members
-        public IActionResult ShowMembers()
+        // Action to show all active members, optionally filtered by search criteria
+        public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive)
         {
             // Fetch all active members with their associated society and hobby
             var activeMembers = _context.ClubMembers
                 .Include(m => m.Society) // Include Society data
                 .Include(m => m.Hobby) // Include Hobby data
-                .Where(m => m.IsActive == true)
-                .ToList();
+                .Where(m => m.IsActive == true);
 
-            // Pass the active members to the view
-            return View(activeMembers);
+            // Apply filtering based on the provided search criteria
+            if (!string.IsNullOrEmpty(memberName))
+            {
+                activeMembers = activeMembers.Where(m => m.MemberName.Contains(memberName));
+            }
+
+            if (!string.IsNullOrEmpty(societyName))
+            {
+                activeMembers = activeMembers.Where(m => m.Society.SocietyName.Contains(societyName));
+            }
+
+            if (gender.HasValue)
+            {
+                activeMembers = activeMembers.Where(m => m.Gender == gender.Value);
+            }
+
+            if (membershipCategory.HasValue)
+            {
+                activeMembers = activeMembers.Where(m => m.MembershipCategory == membershipCategory.Value);
+            }
+
+            if (isActive.HasValue)
+            {
+                activeMembers = activeMembers.Where(m => m.IsActive == isActive.Value);
+            }
+
+            return View(activeMembers.ToList());
         }
     }
 }

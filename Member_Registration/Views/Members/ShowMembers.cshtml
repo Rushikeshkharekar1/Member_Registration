@@ -2,6 +2,37 @@
 
 <h2>Active Club Members</h2>
 
+<form method="get" asp-action="ShowMembers" class="mb-3">
+    <div class="row">
+        <div class="col-md-2">
+            <input type="text" name="memberName" class="form-control" placeholder="Member Name" />
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="societyName" class="form-control" placeholder="Society Name" />
+        </div>
+        <div class="col-md-2">
+            <select name="gender" class="form-control">
+                <option value="">Select Gender</option>
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="membershipCategory" class="form-control" placeholder="Membership Category" />
+        </div>
+        <div class="col-md-2">
+            <select name="isActive" class="form-control">
+                <option value="">Is Active</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -19,7 +50,7 @@
                 <td>@member.MemberName</td>
                 <td>@member.Society.SocietyName</td>
                 <td>@member.Hobby.HobbyName</td>
-                <td>@member.Gender</td>
+                <td>@(member.Gender == 0 ? "Male" : "Female")</td>
                 <td>@member.Remark</td>
             </tr>
         }
