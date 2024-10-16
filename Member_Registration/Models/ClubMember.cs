@@ -10,7 +10,7 @@ namespace Member_Registration.Models
         public Guid SocietyId { get; set; }
         public int Gender { get; set; }
         public int MembershipCategory { get; set; }
-        public Guid HobbyId { get; set; }
+        public Guid? HobbyId { get; set; }
         public string? Remark { get; set; }
         public bool? IsActive { get; set; }
 

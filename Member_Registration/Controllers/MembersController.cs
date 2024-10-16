@@ -52,5 +52,46 @@ namespace Member_Registration.Controllers
 
             return View(activeMembers.ToList());
         }
+
+        public IActionResult AddMember()
+        {
+            // Get all active societies for the dropdown
+            var societies = _context.Societies
+                .Where(s => s.IsActive == true)
+                .ToList();
+
+            // Get all active hobbies for the multi-select
+            var hobbies = _context.Hobbies
+                .Where(h => h.IsActive == true)
+                .ToList();
+
+            // Prepare the view model (you may create a separate ViewModel for better structure)
+            ViewBag.Societies = societies;
+            ViewBag.Hobbies = hobbies;
+
+            return View();
+        }
+        [HttpPost]
+        public IActionResult AddMember(string memberName, Guid societyId, int gender, Guid hobbyIds, int membershipCategory, bool isActive)
+        {
+            // Create new ClubMember object
+            var newMember = new ClubMember
+            {
+                Id = Guid.NewGuid(), // Generate a new ID
+                MemberName = memberName,
+                SocietyId = societyId,
+                Gender = gender,
+                HobbyId = hobbyIds,
+                MembershipCategory = membershipCategory,
+                IsActive = isActive
+            };
+
+            // Add new member to the context
+            _context.ClubMembers.Add(newMember);
+            _context.SaveChanges();
+
+            return RedirectToAction("ShowMembers"); // Redirect to the member list after adding
+        }
+
     }
 }
