@@ -28,7 +28,7 @@ namespace Member_Registration
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Members}/{action=ShowMembers}/{id?}");
 
             app.Run();
         }
