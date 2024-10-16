@@ -1,3 +1,6 @@
+using Member_Registration.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Member_Registration
 {
     public class Program
@@ -9,13 +12,16 @@ namespace Member_Registration
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // Register the DbContext with a connection string
+            builder.Services.AddDbContext<iBlueAnts_MembersContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

@@ -7,10 +7,6 @@ namespace Member_Registration.Models
 {
     public partial class iBlueAnts_MembersContext : DbContext
     {
-        public iBlueAnts_MembersContext()
-        {
-        }
-
         public iBlueAnts_MembersContext(DbContextOptions<iBlueAnts_MembersContext> options)
             : base(options)
         {
@@ -20,15 +16,7 @@ namespace Member_Registration.Models
         public virtual DbSet<Hobby> Hobbies { get; set; } = null!;
         public virtual DbSet<Society> Societies { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-63QI089\\SQLEXPRESS;Database=iBlueAnts_Members;Trusted_Connection=True;");
-            }
-        }
-
+        // No need for OnConfiguring since the configuration is now in Program.cs
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ClubMember>(entity =>
