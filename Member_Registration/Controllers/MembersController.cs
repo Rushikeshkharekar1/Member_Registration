@@ -93,5 +93,50 @@ namespace Member_Registration.Controllers
             return RedirectToAction("ShowMembers"); // Redirect to the member list after adding
         }
 
+        // Edit Member Action (GET)
+        public IActionResult EditMember(Guid id)
+        {
+            // Fetch the member details
+            var member = _context.ClubMembers
+                .Include(m => m.Society)
+                .Include(m => m.Hobby)
+                .FirstOrDefault(m => m.Id == id);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            // Prepare the dropdowns and pass member data to the view
+            ViewBag.Societies = _context.Societies.Where(s => s.IsActive == true).ToList();
+            ViewBag.Hobbies = _context.Hobbies.Where(h => h.IsActive == true).ToList();
+
+            return View(member);
+        }
+
+        // Edit Member Action (POST)
+        [HttpPost]
+        public IActionResult EditMember(Guid id, string memberName, Guid societyId, int gender, Guid hobbyId, int membershipCategory, bool isActive)
+        {
+            var member = _context.ClubMembers.FirstOrDefault(m => m.Id == id);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            // Update member details
+            member.MemberName = memberName;
+            member.SocietyId = societyId;
+            member.Gender = gender;
+            member.HobbyId = hobbyId;
+            member.MembershipCategory = membershipCategory;
+            member.IsActive = isActive;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("ShowMembers");
+        }
+
     }
 }

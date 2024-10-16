@@ -46,6 +46,7 @@
             <th>Hobby</th>
             <th>Gender</th>
             <th>Remarks</th>
+            <th>Actions</th> <!-- Added Action column -->
         </tr>
     </thead>
     <tbody>
@@ -57,6 +58,10 @@
                 <td>@member.Hobby.HobbyName</td>
                 <td>@(member.Gender == 0 ? "Male" : "Female")</td>
                 <td>@member.Remark</td>
+                <td>
+                    <!-- Edit button -->
+                    <a asp-action="EditMember" asp-route-id="@member.Id" class="btn btn-warning">Edit</a>
+                </td>
             </tr>
         }
     </tbody>

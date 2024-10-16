@@ -12,7 +12,7 @@ namespace Member_Registration.Models
         public int MembershipCategory { get; set; }
         public Guid? HobbyId { get; set; }
         public string? Remark { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual Hobby Hobby { get; set; } = null!;
         public virtual Society Society { get; set; } = null!;

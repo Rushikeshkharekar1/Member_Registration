@@ -1,0 +1,47 @@
+﻿@model Member_Registration.Models.ClubMember
+
+<h2>Edit Member</h2>
+
+<form asp-action="EditMember" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="MemberName"></label>
+        <input asp-for="MemberName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="societyId">Society</label>
+        <select asp-for="SocietyId" class="form-control" asp-items="@(new SelectList(ViewBag.Societies, "Id", "SocietyName"))">
+            <option value="">Select a Society</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="hobbyId">Hobby</label>
+        <select asp-for="HobbyId" class="form-control" asp-items="@(new SelectList(ViewBag.Hobbies, "Id", "HobbyName"))">
+            <option value="">Select a Hobby</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Gender"></label>
+        <select asp-for="Gender" class="form-control">
+            <option value="0">Male</option>
+            <option value="1">Female</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MembershipCategory"></label>
+        <input asp-for="MembershipCategory" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IsActive"></label>
+        <input asp-for="IsActive" type="checkbox" class="form-check-input" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="ShowMembers" class="btn btn-secondary">Cancel</a>
+</form>
