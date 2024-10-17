@@ -45,7 +45,6 @@ namespace Member_Registration.Models
                 entity.HasOne(d => d.Society)
                     .WithMany(p => p.ClubMembers)
                     .HasForeignKey(d => d.SocietyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ClubMembers_Society");
             });
 
@@ -56,12 +55,12 @@ namespace Member_Registration.Models
                 entity.HasOne(d => d.ClubMember)
                     .WithMany(p => p.ClubMemberHobbies)
                     .HasForeignKey(d => d.ClubMemberId)
-                    .HasConstraintName("FK__ClubMembe__ClubM__6477ECF3");
+                    .HasConstraintName("FK_ClubMemberHobbies_ClubMembers");
 
                 entity.HasOne(d => d.Hobby)
                     .WithMany(p => p.ClubMemberHobbies)
                     .HasForeignKey(d => d.HobbyId)
-                    .HasConstraintName("FK__ClubMembe__Hobby__656C112C");
+                    .HasConstraintName("FK_ClubMemberHobbies_Hobbies");
             });
 
             modelBuilder.Entity<Hobby>(entity =>

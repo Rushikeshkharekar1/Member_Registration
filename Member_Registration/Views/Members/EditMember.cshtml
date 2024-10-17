@@ -1,52 +1,72 @@
-﻿@* @model Member_Registration.Models.ClubMember
+﻿@model Member_Registration.Models.EditMemberViewModel
 
 <h2>Edit Member</h2>
 
 <form asp-action="EditMember" method="post">
     <input type="hidden" asp-for="Id" />
 
-    <div class="form-group">
-        <label asp-for="MemberName"></label>
+    <div class="mb-3">
+        <label asp-for="MemberName" class="form-label"></label>
         <input asp-for="MemberName" class="form-control" />
+        <span asp-validation-for="MemberName" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label for="societyId">Society</label>
-        <select asp-for="SocietyId" class="form-control" asp-items="@(new SelectList(ViewBag.Societies, "Id", "SocietyName"))">
-            <option value="">Select a Society</option>
+    <div class="mb-3">
+        <label asp-for="SocietyId" class="form-label"></label>
+        <select asp-for="SocietyId" class="form-select">
+            <option value="">Select Society</option>
+            @foreach (var society in Model.Societies)
+            {
+                <option value="@society.Id" selected="@(society.Id == Model.SocietyId ? "selected" : null)">
+                    @society.SocietyName
+                </option>
+            }
         </select>
+        <span asp-validation-for="SocietyId" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label for="hobbyId">Hobby</label>
-        <select asp-for="HobbyId" class="form-control" asp-items="@(new SelectList(ViewBag.Hobbies, "Id", "HobbyName"))">
-            <option value="">Select a Hobby</option>
-        </select>
+
+    <div class="mb-3">
+        <label>Gender</label>
+        <div>
+            <input type="radio" asp-for="Gender" value="0" /> Male
+            <input type="radio" asp-for="Gender" value="1" /> Female
+        </div>
+        <span asp-validation-for="Gender" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Gender"></label>
-        <select asp-for="Gender" class="form-control">
-            <option value="0">Male</option>
-            <option value="1">Female</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="MembershipCategory"></label>
+    <div class="mb-3">
+        <label asp-for="MembershipCategory" class="form-label"></label>
         <input asp-for="MembershipCategory" class="form-control" />
+        <span asp-validation-for="MembershipCategory" class="text-danger"></span>
     </div>
 
-    <div class="form-group">
-        <label asp-for="IsActive"></label>
-        <select asp-for="IsActive" class="form-control">
+    <div class="mb-3">
+        <label asp-for="Remark" class="form-label"></label>
+        <textarea asp-for="Remark" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Remark" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Hobbies</label>
+        <select asp-for="SelectedHobbies" asp-items="@(new SelectList(Model.Hobbies, "Id", "HobbyName"))" class="form-control" multiple="multiple">
+        </select>
+        <span asp-validation-for="SelectedHobbies" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IsActive" class="form-label"></label>
+        <select asp-for="IsActive" class="form-select">
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
+        <span asp-validation-for="IsActive" class="text-danger"></span>
     </div>
 
-
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <button type="submit" class="btn btn-primary">Save</button>
     <a asp-action="ShowMembers" class="btn btn-secondary">Cancel</a>
 </form>
- *@
+
+@* @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} *@
