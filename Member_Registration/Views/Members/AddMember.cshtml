@@ -49,6 +49,11 @@
     </div>
 
     <div class="mb-3">
+        <label asp-for="Remark" class="form-label">Remark</label>
+        <textarea asp-for="Remark" class="form-control" rows="4"></textarea>
+    </div>
+
+    <div class="mb-3">
         <label asp-for="IsActive" class="form-label">Is Active</label>
         <select asp-for="IsActive" class="form-select" required>
             <option value="">Select</option>

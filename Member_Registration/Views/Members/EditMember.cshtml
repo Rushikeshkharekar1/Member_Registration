@@ -31,14 +31,20 @@
         <div>
             <input type="radio" asp-for="Gender" value="0" /> Male
             <input type="radio" asp-for="Gender" value="1" /> Female
+            <input type="radio" asp-for="Gender" value="2" /> Others
         </div>
         <span asp-validation-for="Gender" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="MembershipCategory" class="form-label"></label>
-        <input asp-for="MembershipCategory" class="form-control" />
-        <span asp-validation-for="MembershipCategory" class="text-danger"></span>
+        <label asp-for="MembershipCategory" class="form-label">Membership Category</label>
+        <select asp-for="MembershipCategory" class="form-select" required>
+            <option value="">Select Category</option>
+            <option value="1">A</option>
+            <option value="2">B</option>
+            <option value="3">C</option>
+            <option value="4">D</option>
+        </select>
     </div>
 
     <div class="mb-3">
