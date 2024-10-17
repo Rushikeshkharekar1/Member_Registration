@@ -9,48 +9,47 @@ namespace Member_Registration.Controllers
     {
         private readonly iBlueAnts_MembersContext _context;
 
-        // Constructor to inject the database context
         public MembersController(iBlueAnts_MembersContext context)
         {
             _context = context;
         }
 
-        // Action to show all active members, optionally filtered by search criteria
-        public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive)
+        public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive,string? Remark)
         {
-            // Fetch all active members with their associated society and hobby
-            var activeMembers = _context.ClubMembers
+            // Start by fetching only active members by default
+            var members = _context.ClubMembers
                 .Include(m => m.Society) // Include Society data
-                .Include(m => m.Hobby) // Include Hobby data
-                .Where(m => m.IsActive == true);
+                .Include(m => m.Hobby)// Default to active members
+                .AsQueryable();          // Ensure the result is IQueryable for further filtering
 
             // Apply filtering based on the provided search criteria
             if (!string.IsNullOrEmpty(memberName))
             {
-                activeMembers = activeMembers.Where(m => m.MemberName.Contains(memberName));
+                members = members.Where(m => m.MemberName.Contains(memberName));
             }
 
             if (!string.IsNullOrEmpty(societyName))
             {
-                activeMembers = activeMembers.Where(m => m.Society.SocietyName.Contains(societyName));
+                members = members.Where(m => m.Society.SocietyName.Contains(societyName));
             }
 
             if (gender.HasValue)
             {
-                activeMembers = activeMembers.Where(m => m.Gender == gender.Value);
+                members = members.Where(m => m.Gender == gender.Value);
             }
 
             if (membershipCategory.HasValue)
             {
-                activeMembers = activeMembers.Where(m => m.MembershipCategory == membershipCategory.Value);
+                members = members.Where(m => m.MembershipCategory == membershipCategory.Value);
             }
 
+            // Override the default IsActive filter if the value is specified
             if (isActive.HasValue)
             {
-                activeMembers = activeMembers.Where(m => m.IsActive == isActive.Value);
+                members = members.Where(m => m.IsActive == isActive.Value);
             }
 
-            return View(activeMembers.ToList());
+            return View(members.ToList());
         }
 
         public IActionResult AddMember()
@@ -71,8 +70,9 @@ namespace Member_Registration.Controllers
 
             return View();
         }
+
         [HttpPost]
-        public IActionResult AddMember(string memberName, Guid societyId, int gender, Guid hobbyIds, int membershipCategory, bool isActive)
+        public IActionResult AddMember(string memberName, Guid societyId, int gender, Guid hobbyIds, int membershipCategory, bool isActive,string Remark)
         {
             // Create new ClubMember object
             var newMember = new ClubMember
@@ -81,9 +81,10 @@ namespace Member_Registration.Controllers
                 MemberName = memberName,
                 SocietyId = societyId,
                 Gender = gender,
-                HobbyId = hobbyIds,
+                HobbyId= hobbyIds,
                 MembershipCategory = membershipCategory,
-                IsActive = isActive
+                IsActive = isActive,
+                Remark=Remark
             };
 
             // Add new member to the context
