@@ -1,97 +1,73 @@
-﻿@{
-    ViewData["Title"] = "Add Member";
-}
+﻿@model Member_Registration.Models.AddMemberViewModel
 
-<div class="form-container">
-    <h2 class="form-title">Registration Form</h2>
+<h2>Add Member</h2>
 
-    <form method="post" asp-action="AddMember" class="custom-form">
-        <div class="form-group">
-            <label for="MemberName" class="form-label">Member Name (Mandatory)</label>
-            <input type="text" name="MemberName" id="MemberName" class="form-control" required />
-        </div>
+<form asp-action="AddMember" method="post">
+    <div class="mb-3">
+        <label asp-for="MemberName" class="form-label">Member Name</label>
+        <input asp-for="MemberName" class="form-control" required />
+    </div>
 
-        <div class="form-group">
-            <label for="SocietyId" class="form-label">Society (Mandatory)</label>
-            <select name="SocietyId" id="SocietyId" class="form-control custom-select" required>
-                <option value="">Select Society</option>
-                @foreach (var society in ViewBag.Societies)
-                {
-                    <option value="@society.Id">@society.SocietyName</option>
-                }
-            </select>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">Gender (Mandatory)</label>
-            <div class="form-radio">
-                <input type="radio" name="Gender" value="0" id="GenderMale" required />
-                <label for="GenderMale">Male</label>
-            </div>
-            <div class="form-radio">
-                <input type="radio" name="Gender" value="1" id="GenderFemale" required />
-                <label for="GenderFemale">Female</label>
-            </div>
-            <div class="form-radio">
-                <input type="radio" name="Gender" value="2" id="GenderOther" required />
-                <label for="GenderOther">Other</label>
-            </div>
-        </div>
+    <div class="mb-3">
+        <label>Gender</label><br />
+        <input type="radio" asp-for="Gender" value="0" required /> Male<br />
+        <input type="radio" asp-for="Gender" value="1" required /> Female<br />
+        <input type="radio" asp-for="Gender" value="2" required /> Other<br />
+    </div>
 
-        <div class="form-group">
-            <label for="MembershipCategory" class="form-label">Membership Category (Mandatory)</label>
-            <select name="MembershipCategory" id="MembershipCategory" class="form-control custom-select" required>
-                <option value="">Select Category</option>
-                <option value="1">A</option>
-                <option value="2">B</option>
-                <option value="3">C</option>
-                <option value="4">D</option>
-            </select>
-        </div>
+    <div class="mb-3">
+        <label asp-for="MembershipCategory" class="form-label">Membership Category</label>
+        <select asp-for="MembershipCategory" class="form-select" required>
+            <option value="">Select Category</option>
+            <option value="1">A</option>
+            <option value="2">B</option>
+            <option value="3">C</option>
+            <option value="4">D</option>
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label for="HobbyIds" class="form-label">Hobbies (Select multiple)</label>
-            <select name="HobbyIds" id="HobbyIds" class="form-control custom-select" multiple required>
-                @foreach (var hobby in ViewBag.Hobbies)
-                {
-                    <option value="@hobby.Id">@hobby.HobbyName</option>
-                }
-            </select>
-        </div>
+    <div class="mb-3">
+        <label asp-for="SocietyId" class="form-label">Society</label>
+        <select asp-for="SocietyId" class="form-select" required>
+            <option value="">Select Society</option>
+            @foreach (var society in Model.Societies)
+            {
+                <option value="@society.Id">@society.SocietyName</option>
+            }
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label class="form-label">Is Active (Mandatory)</label>
-            <div class="form-radio">
-                <input type="radio" name="IsActive" value="true" id="ActiveYes" required />
-                <label for="ActiveYes">Yes</label>
-            </div>
-            <div class="form-radio">
-                <input type="radio" name="IsActive" value="false" id="ActiveNo" required />
-                <label for="ActiveNo">No</label>
-            </div>
-        </div>
+    <div class="mb-3">
+        <label asp-for="SelectedHobbies" class="form-label">Hobbies</label>
+        <select asp-for="SelectedHobbies" multiple class="form-control select2" required>
+            @foreach (var hobby in Model.Hobbies)
+            {
+                <option value="@hobby.Id">@hobby.HobbyName</option>
+            }
+        </select>
+    </div>
 
-         <div class="form-group">
-            <label for="Remark" class="form-label">Remark</label>
-            <textarea name="Remark" id="Remark" class="form-control" rows="4"></textarea>
-        </div>
+    <div class="mb-3">
+        <label asp-for="IsActive" class="form-label">Is Active</label>
+        <select asp-for="IsActive" class="form-select" required>
+            <option value="">Select</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-submit">Add Member</button>
-        </div>
-    </form>
-</div>
-<!-- Include Select2 CSS and JS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <button type="submit" class="btn btn-primary">Add Member</button>
+</form>
 
-<script>
-    $(document).ready(function () {
-        $('select[name="HobbyIds"]').select2({
-            placeholder: "Select Hobbies",
-            allowClear: true
+@* @section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
         });
-    });
-</script>
-
+    </script>
+} *@

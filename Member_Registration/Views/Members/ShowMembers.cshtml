@@ -55,7 +55,22 @@
             <tr>
                 <td>@member.MemberName</td>
                 <td>@member.Society.SocietyName</td>
-                <td>@member.Hobby.HobbyName</td>
+                <td>
+                    <!-- Display all hobbies associated with the member -->
+                    @if (member.ClubMemberHobbies != null && member.ClubMemberHobbies.Any())
+                    {
+                        @foreach (var clubMemberHobby in member.ClubMemberHobbies)
+                        {
+                            @clubMemberHobby.Hobby.HobbyName
+
+                            <br />
+                        }
+                    }
+                    else
+                    {
+                        <span>No Hobbies</span>
+                    }
+                </td>
                 <td>@(member.Gender == 0 ? "Male" : "Female")</td>
                 <td>@member.Remark</td>
                 <td>

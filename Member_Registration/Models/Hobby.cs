@@ -7,13 +7,13 @@ namespace Member_Registration.Models
     {
         public Hobby()
         {
-            ClubMembers = new HashSet<ClubMember>();
+            ClubMemberHobbies = new HashSet<ClubMemberHobby>();
         }
 
         public Guid Id { get; set; }
         public string HobbyName { get; set; } = null!;
         public bool? IsActive { get; set; }
 
-        public virtual ICollection<ClubMember> ClubMembers { get; set; }
+        public virtual ICollection<ClubMemberHobby> ClubMemberHobbies { get; set; }
     }
 }

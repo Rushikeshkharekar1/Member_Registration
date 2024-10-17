@@ -14,129 +14,100 @@ namespace Member_Registration.Controllers
             _context = context;
         }
 
-        public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive,string? Remark)
+        public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive)
         {
-            // Start by fetching only active members by default
-            var members = _context.ClubMembers
-                .Include(m => m.Society) // Include Society data
-                .Include(m => m.Hobby)// Default to active members
-                .AsQueryable();          // Ensure the result is IQueryable for further filtering
+            // Start with the base query
+            var query = _context.ClubMembers
+                                .Include(cm => cm.Society)  // Include related Society
+                                .Include(cm => cm.ClubMemberHobbies)
+                                .ThenInclude(cmh => cmh.Hobby)
+                                .AsQueryable(); ;  // Include related Hobbies through ClubMemberHobbies
 
-            // Apply filtering based on the provided search criteria
+            // Apply filters based on input
             if (!string.IsNullOrEmpty(memberName))
             {
-                members = members.Where(m => m.MemberName.Contains(memberName));
+                query = query.Where(cm => cm.MemberName.Contains(memberName));
             }
 
             if (!string.IsNullOrEmpty(societyName))
             {
-                members = members.Where(m => m.Society.SocietyName.Contains(societyName));
+                query = query.Where(cm => cm.Society.SocietyName.Contains(societyName));
             }
 
             if (gender.HasValue)
             {
-                members = members.Where(m => m.Gender == gender.Value);
+                query = query.Where(cm => cm.Gender == gender.Value);
             }
 
             if (membershipCategory.HasValue)
             {
-                members = members.Where(m => m.MembershipCategory == membershipCategory.Value);
+                query = query.Where(cm => cm.MembershipCategory == membershipCategory.Value);
             }
 
-            // Override the default IsActive filter if the value is specified
             if (isActive.HasValue)
             {
-                members = members.Where(m => m.IsActive == isActive.Value);
+                query = query.Where(cm => cm.IsActive == isActive.Value);
             }
 
-            return View(members.ToList());
-        }
+            var members = query.ToList(); // Execute the query and get the list of members
 
+            return View(members);
+        }
+        // GET: Members/Add
         public IActionResult AddMember()
         {
-            // Get all active societies for the dropdown
-            var societies = _context.Societies
-                .Where(s => s.IsActive == true)
-                .ToList();
-
-            // Get all active hobbies for the multi-select
-            var hobbies = _context.Hobbies
-                .Where(h => h.IsActive == true)
-                .ToList();
-
-            // Prepare the view model (you may create a separate ViewModel for better structure)
-            ViewBag.Societies = societies;
-            ViewBag.Hobbies = hobbies;
-
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult AddMember(string memberName, Guid societyId, int gender, Guid hobbyIds, int membershipCategory, bool isActive,string Remark)
-        {
-            // Create new ClubMember object
-            var newMember = new ClubMember
+            var viewModel = new AddMemberViewModel
             {
-                Id = Guid.NewGuid(), // Generate a new ID
-                MemberName = memberName,
-                SocietyId = societyId,
-                Gender = gender,
-                HobbyId= hobbyIds,
-                MembershipCategory = membershipCategory,
-                IsActive = isActive,
-                Remark=Remark
+                Societies = _context.Societies.Where(s => (bool)s.IsActive).ToList(),
+                Hobbies = _context.Hobbies.Where(h => (bool)h.IsActive).ToList()
             };
-
-            // Add new member to the context
-            _context.ClubMembers.Add(newMember);
-            _context.SaveChanges();
-
-            return RedirectToAction("ShowMembers"); // Redirect to the member list after adding
+            return View(viewModel);
         }
 
-        // Edit Member Action (GET)
-        public IActionResult EditMember(Guid id)
-        {
-            // Fetch the member details
-            var member = _context.ClubMembers
-                .Include(m => m.Society)
-                .Include(m => m.Hobby)
-                .FirstOrDefault(m => m.Id == id);
-
-            if (member == null)
-            {
-                return NotFound();
-            }
-
-            // Prepare the dropdowns and pass member data to the view
-            ViewBag.Societies = _context.Societies.Where(s => s.IsActive == true).ToList();
-            ViewBag.Hobbies = _context.Hobbies.Where(h => h.IsActive == true).ToList();
-
-            return View(member);
-        }
-
-        // Edit Member Action (POST)
+        // POST: Members/Add
         [HttpPost]
-        public IActionResult EditMember(Guid id, string memberName, Guid societyId, int gender, Guid hobbyId, int membershipCategory, bool isActive)
+        public IActionResult AddMember(AddMemberViewModel model)
         {
-            var member = _context.ClubMembers.FirstOrDefault(m => m.Id == id);
-
-            if (member == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var newMember = new ClubMember
+                {
+                    Id = Guid.NewGuid(),
+                    MemberName = model.MemberName,
+                    SocietyId = model.SocietyId,
+                    Gender = model.Gender,
+                    MembershipCategory = model.MembershipCategory,
+                    Remark = model.Remark,
+                    IsActive = model.IsActive
+                };
+
+                _context.ClubMembers.Add(newMember);
+                _context.SaveChanges();
+
+                // Add selected hobbies
+                if (model.SelectedHobbies != null && model.SelectedHobbies.Count > 0)
+                {
+                    foreach (var hobbyId in model.SelectedHobbies)
+                    {
+                        var clubMemberHobby = new ClubMemberHobby
+                        {
+                            Id = Guid.NewGuid(),
+                            ClubMemberId = newMember.Id,
+                            HobbyId = Guid.Parse(hobbyId) // Ensure this matches your hobby ID type
+                        };
+                        _context.ClubMemberHobbies.Add(clubMemberHobby);
+                    }
+                    _context.SaveChanges();
+                }
+
+                return RedirectToAction(nameof(ShowMembers)); // Redirect after successful addition
             }
 
-            // Update member details
-            member.MemberName = memberName;
-            member.SocietyId = societyId;
-            member.Gender = gender;
-            member.HobbyId = hobbyId;
-            member.MembershipCategory = membershipCategory;
-            member.IsActive = isActive;
+            // If model is not valid, re-fetch societies and hobbies for the view
+            model.Societies = _context.Societies.Where(s => (bool)s.IsActive).ToList();
+            model.Hobbies = _context.Hobbies.Where(h => (bool)h.IsActive).ToList();
 
-            _context.SaveChanges();
-
-            return RedirectToAction("ShowMembers");
+            return View(model);
         }
 
     }

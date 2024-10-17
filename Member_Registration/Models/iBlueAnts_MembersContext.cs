@@ -7,16 +7,27 @@ namespace Member_Registration.Models
 {
     public partial class iBlueAnts_MembersContext : DbContext
     {
+        public iBlueAnts_MembersContext()
+        {
+        }
+
         public iBlueAnts_MembersContext(DbContextOptions<iBlueAnts_MembersContext> options)
             : base(options)
         {
         }
 
         public virtual DbSet<ClubMember> ClubMembers { get; set; } = null!;
+        public virtual DbSet<ClubMemberHobby> ClubMemberHobbies { get; set; } = null!;
         public virtual DbSet<Hobby> Hobbies { get; set; } = null!;
         public virtual DbSet<Society> Societies { get; set; } = null!;
 
-        // No need for OnConfiguring since the configuration is now in Program.cs
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ClubMember>(entity =>
@@ -31,17 +42,26 @@ namespace Member_Registration.Models
 
                 entity.Property(e => e.Remark).HasMaxLength(500);
 
-                entity.HasOne(d => d.Hobby)
-                    .WithMany(p => p.ClubMembers)
-                    .HasForeignKey(d => d.HobbyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ClubMembers_Hobbies");
-
                 entity.HasOne(d => d.Society)
                     .WithMany(p => p.ClubMembers)
                     .HasForeignKey(d => d.SocietyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ClubMembers_Society");
+            });
+
+            modelBuilder.Entity<ClubMemberHobby>(entity =>
+            {
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.ClubMember)
+                    .WithMany(p => p.ClubMemberHobbies)
+                    .HasForeignKey(d => d.ClubMemberId)
+                    .HasConstraintName("FK__ClubMembe__ClubM__6477ECF3");
+
+                entity.HasOne(d => d.Hobby)
+                    .WithMany(p => p.ClubMemberHobbies)
+                    .HasForeignKey(d => d.HobbyId)
+                    .HasConstraintName("FK__ClubMembe__Hobby__656C112C");
             });
 
             modelBuilder.Entity<Hobby>(entity =>
