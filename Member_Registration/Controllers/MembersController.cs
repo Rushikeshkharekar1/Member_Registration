@@ -326,7 +326,20 @@ namespace Member_Registration.Controllers
                 return File(memoryStream.ToArray(), "application/pdf", pdfName);
             }
         }
+        public IActionResult GenderDistribution()
+        {
+            // Fetching the gender counts for all members
+            var genderCounts = new
+            {
+                Male = _context.ClubMembers.Count(m => m.Gender == 0),
+                Female = _context.ClubMembers.Count(m => m.Gender == 1),
+                Other = _context.ClubMembers.Count(m => m.Gender == 2)
+            };
 
+            // Pass the data to the view via ViewBag
+            ViewBag.GenderCounts = genderCounts;
 
+            return View();
+        }
     }
 }
