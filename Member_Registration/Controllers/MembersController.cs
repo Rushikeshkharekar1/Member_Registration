@@ -3,6 +3,9 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Member_Registration.Models;
 using OfficeOpenXml;
+using iText.Kernel.Pdf;
+using iText.Layout.Element;
+using iText.Layout;
 
 namespace Member_Registration.Controllers
 { 
@@ -260,6 +263,70 @@ namespace Member_Registration.Controllers
         {
             return _context.ClubMembers.Any(e => e.Id == id);
         }
+
+        public IActionResult ViewMember(Guid id)
+        {
+            var member = _context.ClubMembers
+                .Include(cm => cm.Society)
+                .Include(cm => cm.ClubMemberHobbies)
+                    .ThenInclude(cmh => cmh.Hobby)
+                .FirstOrDefault(cm => cm.Id == id);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            return View(member);
+        }
+
+        public IActionResult DownloadPdf(Guid id)
+        {
+            var member = _context.ClubMembers
+                .Include(cm => cm.Society)
+                .Include(cm => cm.ClubMemberHobbies)
+                    .ThenInclude(cmh => cmh.Hobby)
+                .FirstOrDefault(cm => cm.Id == id);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                // Create a PDF document
+                var pdfWriter = new PdfWriter(memoryStream);
+                var pdfDocument = new PdfDocument(pdfWriter);
+                var document = new Document(pdfDocument);
+
+                // Add content to the PDF
+                document.Add(new Paragraph($"Member Name: {member.MemberName}"));
+                document.Add(new Paragraph($"Society: {member.Society?.SocietyName}"));
+
+                document.Add(new Paragraph("Hobbies:"));
+                if (member.ClubMemberHobbies != null && member.ClubMemberHobbies.Any())
+                {
+                    foreach (var hobby in member.ClubMemberHobbies)
+                    {
+                        document.Add(new Paragraph(hobby.Hobby.HobbyName));
+                    }
+                }
+                else
+                {
+                    document.Add(new Paragraph("No Hobbies"));
+                }
+
+                document.Add(new Paragraph($"Gender: {(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other")}"));
+                document.Add(new Paragraph($"Remarks: {member.Remark}"));
+                document.Add(new Paragraph($"Is Active: {(member.IsActive.HasValue && member.IsActive.Value ? "Yes" : "No")}"));
+
+                document.Close();
+                var pdfName = $"Member-{member.MemberName}-{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                return File(memoryStream.ToArray(), "application/pdf", pdfName);
+            }
+        }
+
 
     }
 }
