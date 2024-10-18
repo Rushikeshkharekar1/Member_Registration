@@ -48,6 +48,7 @@
         </select>
     </div>
 
+
     <div class="mb-3">
         <label asp-for="Remark" class="form-label">Remark</label>
         <textarea asp-for="Remark" class="form-control" rows="4"></textarea>
@@ -64,3 +65,11 @@
 
     <button type="submit" class="btn btn-primary">Add Member</button>
 </form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2({
+            placeholder: 'Select Hobbies',
+            allowClear: true
+        });
+    });
+</script>
