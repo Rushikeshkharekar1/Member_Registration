@@ -1,6 +1,62 @@
 ﻿@model IEnumerable<Member_Registration.Models.ClubMember>
 
 <h2>Club Members</h2>
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    /* Toggle on */
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>
 
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
@@ -24,7 +80,6 @@
                 <option value="2" selected="@(Context.Request.Query["gender"] == "2")">Others</option>
             </select>
         </div>
-
 
         <div class="col-md-2">
             <select name="membershipCategory" class="form-control">
@@ -74,7 +129,6 @@
                         @foreach (var clubMemberHobby in member.ClubMemberHobbies)
                         {
                             @clubMemberHobby.Hobby.HobbyName
-
                             <br />
                         }
                     }
@@ -89,8 +143,12 @@
 
                 <td>@member.Remark</td>
                 <td>
-                    @(member.IsActive.HasValue ? (member.IsActive.Value ? "Yes" : "No") : "N/A")
+                    <label class="switch">
+                        <input type="checkbox" class="toggle-is-active" data-id="@member.Id" @(member.IsActive.HasValue && member.IsActive.Value ? "checked" : "") />
+                        <span class="slider round"></span>
+                    </label>
                 </td>
+
 
                 <td>
                     <a asp-action="EditMember" asp-route-id="@member.Id" class="btn btn-warning">Edit</a>
@@ -100,3 +158,28 @@
         }
     </tbody>
 </table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).on('change', '.toggle-is-active', function () {
+        var memberId = $(this).data('id');
+        var isActive = $(this).is(':checked');
+
+        $.ajax({
+            url: '@Url.Action("UpdateIsActive", "Members")',
+            type: 'POST',
+            data: {
+                id: memberId,
+                isActive: isActive,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // Include the token
+            },
+            success: function (result) {
+                alert('Status updated successfully.');
+            },
+            error: function (xhr, status, error) {
+                alert('Error updating status: ' + error);
+            }
+        });
+
+    });
+</script>

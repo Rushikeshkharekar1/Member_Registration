@@ -341,5 +341,18 @@ namespace Member_Registration.Controllers
 
             return View();
         }
+        [HttpPost]
+        public IActionResult UpdateIsActive(Guid id, bool isActive)
+        {
+            var member = _context.ClubMembers.Find(id);
+            if (member != null)
+            {
+                member.IsActive = isActive;
+                _context.SaveChanges();
+                return Json(new { success = true });
+            }
+            return Json(new { success = false });
+        }
+
     }
 }
