@@ -6,43 +6,44 @@
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
     <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>
     <a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a>
-
 </div>
-
 
 <form method="get" asp-action="ShowMembers" class="mb-3">
     <div class="row">
         <div class="col-md-2">
-            <input type="text" name="memberName" class="form-control" placeholder="Member Name" />
+            <input type="text" name="memberName" value="@Context.Request.Query["memberName"]" class="form-control" placeholder="Member Name" />
         </div>
         <div class="col-md-2">
-            <input type="text" name="societyName" class="form-control" placeholder="Society Name" />
+            <input type="text" name="societyName" value="@Context.Request.Query["societyName"]" class="form-control" placeholder="Society Name" />
         </div>
         <div class="col-md-2">
             <select name="gender" class="form-control">
                 <option value="">Select Gender</option>
-                <option value="0">Male</option>
-                <option value="1">Female</option>
-                <option value="2">Others</option>
+                <option value="0" selected="@(Context.Request.Query["gender"] == "0")">Male</option>
+                <option value="1" selected="@(Context.Request.Query["gender"] == "1")">Female</option>
+                <option value="2" selected="@(Context.Request.Query["gender"] == "2")">Others</option>
             </select>
         </div>
-        
+
+
         <div class="col-md-2">
             <select name="membershipCategory" class="form-control">
                 <option value="">Select Category</option>
-                <option value="1">A</option>
-                <option value="2">B</option>
-                <option value="3">C</option>
-                <option value="4">D</option>
+                <option value="1" selected="@(Context.Request.Query["membershipCategory"] == "1")">A</option>
+                <option value="2" selected="@(Context.Request.Query["membershipCategory"] == "2")">B</option>
+                <option value="3" selected="@(Context.Request.Query["membershipCategory"] == "3")">C</option>
+                <option value="4" selected="@(Context.Request.Query["membershipCategory"] == "4")">D</option>
             </select>
         </div>
+
         <div class="col-md-2">
             <select name="isActive" class="form-control">
                 <option value="">Is Active</option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+                <option value="true" selected="@(Context.Request.Query["isActive"] == "true")">Yes</option>
+                <option value="false" selected="@(Context.Request.Query["isActive"] == "false")">No</option>
             </select>
         </div>
+
         <div class="col-md-2">
             <button class="btn btn-primary" type="submit">Search</button>
         </div>
@@ -95,7 +96,6 @@
                     <a asp-action="EditMember" asp-route-id="@member.Id" class="btn btn-warning">Edit</a>
                     <a asp-action="ViewMember" asp-route-id="@member.Id" class="btn btn-info">View</a>
                 </td>
-
             </tr>
         }
     </tbody>
