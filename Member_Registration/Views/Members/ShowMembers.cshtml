@@ -1,8 +1,7 @@
 ﻿@model IEnumerable<Member_Registration.Models.ClubMember>
 
-<h2>Active Club Members</h2>
+<h2>Club Members</h2>
 
-<!-- Add Member Button -->
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
 </div>
@@ -20,10 +19,18 @@
                 <option value="">Select Gender</option>
                 <option value="0">Male</option>
                 <option value="1">Female</option>
+                <option value="2">Others</option>
             </select>
         </div>
+        
         <div class="col-md-2">
-            <input type="number" name="membershipCategory" class="form-control" placeholder="Membership Category" />
+            <select name="membershipCategory" class="form-control">
+                <option value="">Select Category</option>
+                <option value="1">A</option>
+                <option value="2">B</option>
+                <option value="3">C</option>
+                <option value="4">D</option>
+            </select>
         </div>
         <div class="col-md-2">
             <select name="isActive" class="form-control">
@@ -46,7 +53,8 @@
             <th>Hobby</th>
             <th>Gender</th>
             <th>Remarks</th>
-            <th>Actions</th> <!-- Added Action column -->
+            <th>Is Active</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -56,7 +64,6 @@
                 <td>@member.MemberName</td>
                 <td>@member.Society.SocietyName</td>
                 <td>
-                    <!-- Display all hobbies associated with the member -->
                     @if (member.ClubMemberHobbies != null && member.ClubMemberHobbies.Any())
                     {
                         @foreach (var clubMemberHobby in member.ClubMemberHobbies)
@@ -77,7 +84,10 @@
 
                 <td>@member.Remark</td>
                 <td>
-                    <!-- Edit button -->
+                    @(member.IsActive.HasValue ? (member.IsActive.Value ? "Yes" : "No") : "N/A")
+                </td>
+
+                <td>
                     <a asp-action="EditMember" asp-route-id="@member.Id" class="btn btn-warning">Edit</a>
                 </td>
             </tr>

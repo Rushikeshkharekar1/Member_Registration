@@ -16,14 +16,12 @@ namespace Member_Registration.Controllers
 
         public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive)
         {
-            // Start with the base query
             var query = _context.ClubMembers
-                                .Include(cm => cm.Society)  // Include related Society
+                                .Include(cm => cm.Society)
                                 .Include(cm => cm.ClubMemberHobbies)
                                 .ThenInclude(cmh => cmh.Hobby)
-                                .AsQueryable(); ;  // Include related Hobbies through ClubMemberHobbies
+                                .AsQueryable();
 
-            // Apply filters based on input
             if (!string.IsNullOrEmpty(memberName))
             {
                 query = query.Where(cm => cm.MemberName.Contains(memberName));
@@ -49,11 +47,11 @@ namespace Member_Registration.Controllers
                 query = query.Where(cm => cm.IsActive == isActive.Value);
             }
 
-            var members = query.ToList(); // Execute the query and get the list of members
+            var members = query.ToList();
 
             return View(members);
         }
-        // GET: Members/Add
+
         public IActionResult AddMember()
         {
             var viewModel = new AddMemberViewModel
@@ -64,7 +62,6 @@ namespace Member_Registration.Controllers
             return View(viewModel);
         }
 
-        // POST: Members/Add
         [HttpPost]
         public IActionResult AddMember(AddMemberViewModel model)
         {
@@ -84,7 +81,6 @@ namespace Member_Registration.Controllers
                 _context.ClubMembers.Add(newMember);
                 _context.SaveChanges();
 
-                // Add selected hobbies
                 if (model.SelectedHobbies != null && model.SelectedHobbies.Count > 0)
                 {
                     foreach (var hobbyId in model.SelectedHobbies)
@@ -93,31 +89,29 @@ namespace Member_Registration.Controllers
                         {
                             Id = Guid.NewGuid(),
                             ClubMemberId = newMember.Id,
-                            HobbyId = Guid.Parse(hobbyId) // Ensure this matches your hobby ID type
+                            HobbyId = Guid.Parse(hobbyId)
                         };
                         _context.ClubMemberHobbies.Add(clubMemberHobby);
                     }
                     _context.SaveChanges();
                 }
 
-                return RedirectToAction(nameof(ShowMembers)); // Redirect after successful addition
+                return RedirectToAction(nameof(ShowMembers));
             }
 
-            // If model is not valid, re-fetch societies and hobbies for the view
             model.Societies = _context.Societies.Where(s => (bool)s.IsActive).ToList();
             model.Hobbies = _context.Hobbies.Where(h => (bool)h.IsActive).ToList();
 
             return View(model);
         }
 
-        // GET: Edit Member
-        public IActionResult EditMember(Guid id) // Change from int to Guid
+        public IActionResult EditMember(Guid id)
         {
-            // Fetch the member details based on the provided ID
+            
             var member = _context.ClubMembers
-                .Include(cm => cm.Society) // Include related Society
+                .Include(cm => cm.Society)
                 .Include(cm => cm.ClubMemberHobbies)
-                    .ThenInclude(cmh => cmh.Hobby) // Include related Hobbies
+                    .ThenInclude(cmh => cmh.Hobby)
                 .FirstOrDefault(cm => cm.Id == id);
 
             if (member == null)
@@ -125,7 +119,6 @@ namespace Member_Registration.Controllers
                 return NotFound();
             }
 
-            // Prepare the view model
             var model = new EditMemberViewModel
             {
                 Id = member.Id,
@@ -144,7 +137,6 @@ namespace Member_Registration.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditMember(Guid id, EditMemberViewModel model, Guid[] selectedHobbies)
         {
             if (id != model.Id)
@@ -156,7 +148,6 @@ namespace Member_Registration.Controllers
             {
                 try
                 {
-                    // Fetch the existing member from the database
                     var memberToUpdate = await _context.ClubMembers
                         .Include(cm => cm.ClubMemberHobbies)
                         .FirstOrDefaultAsync(cm => cm.Id == id);
@@ -166,7 +157,6 @@ namespace Member_Registration.Controllers
                         return NotFound();
                     }
 
-                    // Update the member details from the view model
                     memberToUpdate.MemberName = model.MemberName;
                     memberToUpdate.Gender = model.Gender;
                     memberToUpdate.MembershipCategory = model.MembershipCategory;
@@ -174,19 +164,15 @@ namespace Member_Registration.Controllers
                     memberToUpdate.IsActive = model.IsActive;
                     memberToUpdate.Remark = model.Remark;
 
-                    // Update the member in the database
                     _context.Update(memberToUpdate);
                     await _context.SaveChangesAsync();
 
-                    // Update member hobbies
                     var existingHobbies = await _context.ClubMemberHobbies
                         .Where(ch => ch.ClubMemberId == id)
                         .ToListAsync();
 
-                    // Remove old hobbies
                     _context.ClubMemberHobbies.RemoveRange(existingHobbies);
 
-                    // Add selected hobbies
                     if (selectedHobbies != null)
                     {
                         foreach (var hobbyId in selectedHobbies)
@@ -218,7 +204,6 @@ namespace Member_Registration.Controllers
                 }
             }
 
-            // If the model is not valid, re-fetch societies and hobbies for the view
             model.Societies = await _context.Societies.Where(s => (bool)s.IsActive).ToListAsync();
             model.Hobbies = await _context.Hobbies.Where(h => (bool)h.IsActive).ToListAsync();
 

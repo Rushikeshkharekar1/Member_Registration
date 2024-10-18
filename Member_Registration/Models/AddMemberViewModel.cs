@@ -13,6 +13,6 @@ namespace Member_Registration.Models
         public bool? IsActive { get; set; }
         public List<Society>? Societies { get; set; }
         public List<Hobby>? Hobbies { get; set; }
-        public List<string> SelectedHobbies { get; set; } = new List<string>(); // for selected hobbies
+        public List<string> SelectedHobbies { get; set; } = new List<string>();
     }
 }
