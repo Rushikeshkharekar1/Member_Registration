@@ -2,9 +2,10 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Member_Registration.Models;
+using OfficeOpenXml;
 
 namespace Member_Registration.Controllers
-{
+{ 
     public class MembersController : Controller
     {
         private readonly iBlueAnts_MembersContext _context;
@@ -12,6 +13,51 @@ namespace Member_Registration.Controllers
         public MembersController(iBlueAnts_MembersContext context)
         {
             _context = context;
+        }
+        public IActionResult DownloadExcel()
+        {
+            // Set the EPPlus license context
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            var members = _context.ClubMembers
+                .Select(member => new
+                {
+                    member.MemberName,
+                    SocietyName = member.Society.SocietyName,
+                    Hobbies = member.ClubMemberHobbies.Select(h => h.Hobby.HobbyName).ToList(),
+                    Gender = member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other",
+                    member.Remark,
+                    IsActive = member.IsActive.HasValue && member.IsActive.Value ? "Yes" : "No"
+                })
+                .ToList();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Club Members");
+
+                worksheet.Cells[1, 1].Value = "Member Name";
+                worksheet.Cells[1, 2].Value = "Society";
+                worksheet.Cells[1, 3].Value = "Hobbies";
+                worksheet.Cells[1, 4].Value = "Gender";
+                worksheet.Cells[1, 5].Value = "Remarks";
+                worksheet.Cells[1, 6].Value = "Is Active";
+
+                for (int i = 0; i < members.Count; i++)
+                {
+                    worksheet.Cells[i + 2, 1].Value = members[i].MemberName;
+                    worksheet.Cells[i + 2, 2].Value = members[i].SocietyName;
+                    worksheet.Cells[i + 2, 3].Value = string.Join(", ", members[i].Hobbies);
+                    worksheet.Cells[i + 2, 4].Value = members[i].Gender;
+                    worksheet.Cells[i + 2, 5].Value = members[i].Remark;
+                    worksheet.Cells[i + 2, 6].Value = members[i].IsActive;
+                }
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+
+                string excelName = $"ClubMembers-{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName);
+            }
         }
 
         public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive)
