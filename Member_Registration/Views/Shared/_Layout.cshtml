@@ -1,0 +1,109 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Member Registration</title>
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="~/assets/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <link href="~/assets/css/plugins/dataTables/datatables.min.css" rel="stylesheet">
+
+    <link href="~/assets/css/animate.css" rel="stylesheet">
+    <link href="~/assets/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery (required by Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    @* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> *@
+
+
+    
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Sidebar Navigation -->
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav metismenu" id="side-menu">
+                    <!-- Sidebar Header -->
+                    <li class="nav-header">
+                        <div >
+                            <a  href="#">
+                                <span class="block m-t-xs font-bold">Rushikesh Kharekar</span>
+                                <span class="text-muted text-xs block">SoftWare Developer </span>
+                            </a>
+                        </div>
+                    </li>
+                    <!-- Add more menu items here -->
+                    <li class="active">
+                        <a href="#"><i class="fa fa-table"></i> <span class="nav-label">iBlueAnts Club</span><span></span></a>
+                        <ul class="nav nav-second-level">
+                            <li><a href="~/Members/ShowMembers">Members</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="gray-bg">
+           
+            <!-- Main Content -->
+            <div class="wrapper wrapper-content animated fadeInRight">
+                @RenderBody()
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="float-right">
+                    10GB of <strong>250GB</strong> Free.
+                </div>
+                <div>
+                    <strong>Copyright</strong> Example Company &copy; 2014-2018
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';
+
+            $(document).ready(function () {
+                $('.dataTables-example').DataTable({
+                    pageLength: 25,
+                    responsive: true,
+                    dom: '<"html5buttons"B>lTfgitp',
+                    buttons: [
+                        { extend: 'copy' },
+                        { extend: 'csv' },
+                        { extend: 'excel', title: 'ExampleFile' },
+                        { extend: 'pdf', title: 'ExampleFile' },
+
+                        {
+                            extend: 'print',
+                            customize: function (win) {
+                                $(win.document.body).addClass('white-bg');
+                                $(win.document.body).css('font-size', '10px');
+
+                                $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                            }
+                        }
+                    ]
+                });
+
+            });
+        </script>
+    }
+</body>
+</html>

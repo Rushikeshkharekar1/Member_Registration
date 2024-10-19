@@ -1,0 +1,75 @@
+﻿@model Member_Registration.Models.AddMemberViewModel
+
+<h2>Add Member</h2>
+
+<form asp-action="AddMember" method="post">
+    <div class="mb-3">
+        <label asp-for="MemberName" class="form-label">Member Name</label>
+        <input asp-for="MemberName" class="form-control" required />
+    </div>
+
+
+    <div class="mb-3">
+        <label>Gender</label><br />
+        <input type="radio" asp-for="Gender" value="0" required /> Male<br />
+        <input type="radio" asp-for="Gender" value="1" required /> Female<br />
+        <input type="radio" asp-for="Gender" value="2" required /> Other<br />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="MembershipCategory" class="form-label">Membership Category</label>
+        <select asp-for="MembershipCategory" class="form-select" required>
+            <option value="">Select Category</option>
+            <option value="1">A</option>
+            <option value="2">B</option>
+            <option value="3">C</option>
+            <option value="4">D</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SocietyId" class="form-label">Society</label>
+        <select asp-for="SocietyId" class="form-select" required>
+            <option value="">Select Society</option>
+            @foreach (var society in Model.Societies)
+            {
+                <option value="@society.Id">@society.SocietyName</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SelectedHobbies" class="form-label">Hobbies</label>
+        <select asp-for="SelectedHobbies" multiple class="form-control select2" required>
+            @foreach (var hobby in Model.Hobbies)
+            {
+                <option value="@hobby.Id">@hobby.HobbyName</option>
+            }
+        </select>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Remark" class="form-label">Remark</label>
+        <textarea asp-for="Remark" class="form-control" rows="4"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IsActive" class="form-label">Is Active</label>
+        <select asp-for="IsActive" class="form-select" required>
+            <option value="">Select</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Member</button>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.select2').select2({
+            placeholder: 'Select Hobbies',
+            allowClear: true
+        });
+    });
+</script>

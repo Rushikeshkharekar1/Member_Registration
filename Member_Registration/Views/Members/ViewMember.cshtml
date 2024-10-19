@@ -1,0 +1,52 @@
+﻿@model Member_Registration.Models.ClubMember
+
+<h2>Member Details</h2>
+
+<div class="card">
+    <div class="card-header">
+        <h3>@Model.MemberName</h3>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Member Name</dt>
+            <dd class="col-sm-9">@Model.MemberName</dd>
+
+            <dt class="col-sm-3">Society</dt>
+            <dd class="col-sm-9">@Model.Society?.SocietyName</dd>
+
+            <dt class="col-sm-3">Hobbies</dt>
+            <dd class="col-sm-9">
+                @if (Model.ClubMemberHobbies != null && Model.ClubMemberHobbies.Any())
+                {
+                    <ul>
+                        @foreach (var hobby in Model.ClubMemberHobbies)
+                        {
+                            <li>@hobby.Hobby.HobbyName</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span>No Hobbies</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Gender</dt>
+            <dd class="col-sm-9">
+                @(Model.Gender == 0 ? "Male" : Model.Gender == 1 ? "Female" : "Other")
+            </dd>
+
+            <dt class="col-sm-3">Remarks</dt>
+            <dd class="col-sm-9">@Model.Remark</dd>
+
+            <dt class="col-sm-3">Is Active</dt>
+            <dd class="col-sm-9">
+                @(Model.IsActive.HasValue ? (Model.IsActive.Value ? "Yes" : "No") : "N/A")
+            </dd>
+        </dl>
+
+        <a asp-action="ShowMembers" class="btn btn-primary">Back to List</a>
+        <a asp-action="DownloadPdf" asp-route-id="@Model.Id" class="btn btn-info">Download as PDF</a>
+
+    </div>
+</div>

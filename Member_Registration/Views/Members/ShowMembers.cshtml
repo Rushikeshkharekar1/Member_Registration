@@ -1,0 +1,127 @@
+﻿@model IEnumerable<Member_Registration.Models.ClubMember>
+
+<h2>Club Members</h2>
+<div class="mb-3">
+    <a asp-action="AddMember" class="btn btn-success">Add Member</a>
+    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>
+    <a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a>
+</div>
+
+<form method="get" asp-action="ShowMembers" class="mb-3">
+    <div class="row">
+        <div class="col-md-2">
+            <input type="text" name="memberName" value="@Context.Request.Query["memberName"]" class="form-control" placeholder="Member Name" />
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="societyName" value="@Context.Request.Query["societyName"]" class="form-control" placeholder="Society Name" />
+        </div>
+        <div class="col-md-2">
+            <select name="gender" class="form-control">
+                <option value="">Select Gender</option>
+                <option value="0" selected="@(Context.Request.Query["gender"] == "0")">Male</option>
+                <option value="1" selected="@(Context.Request.Query["gender"] == "1")">Female</option>
+                <option value="2" selected="@(Context.Request.Query["gender"] == "2")">Others</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="membershipCategory" class="form-control">
+                <option value="">Select Category</option>
+                <option value="1" selected="@(Context.Request.Query["membershipCategory"] == "1")">A</option>
+                <option value="2" selected="@(Context.Request.Query["membershipCategory"] == "2")">B</option>
+                <option value="3" selected="@(Context.Request.Query["membershipCategory"] == "3")">C</option>
+                <option value="4" selected="@(Context.Request.Query["membershipCategory"] == "4")">D</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="isActive" class="form-control">
+                <option value="">Is Active</option>
+                <option value="true" selected="@(Context.Request.Query["isActive"] == "true")">Yes</option>
+                <option value="false" selected="@(Context.Request.Query["isActive"] == "false")">No</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Member Name</th>
+            <th>Society</th>
+            <th>Hobby</th>
+            <th>Gender</th>
+            <th>Remarks</th>
+            <th>Is Active</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var member in Model)
+        {
+            <tr>
+                <td>@member.MemberName</td>
+                <td>@member.Society.SocietyName</td>
+                <td>
+                    @if (member.ClubMemberHobbies != null && member.ClubMemberHobbies.Any())
+                    {
+                        @foreach (var clubMemberHobby in member.ClubMemberHobbies)
+                        {
+                            @clubMemberHobby.Hobby.HobbyName
+                            <br />
+                        }
+                    }
+                    else
+                    {
+                        <span>No Hobbies</span>
+                    }
+                </td>
+                <td>
+                    @(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other")
+                </td>
+
+                <td>@member.Remark</td>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox" class="toggle-is-active" data-id="@member.Id" @(member.IsActive.HasValue && member.IsActive.Value ? "checked" : "") />
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+
+
+                <td>
+                    <a asp-action="EditMember" asp-route-id="@member.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="ViewMember" asp-route-id="@member.Id" class="btn btn-info">View</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).on('change', '.toggle-is-active', function () {
+        var memberId = $(this).data('id');
+        var isActive = $(this).is(':checked');
+
+        $.ajax({
+            url: '@Url.Action("UpdateIsActive", "Members")',
+            type: 'POST',
+            data: {
+                id: memberId,
+                isActive: isActive,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // Include the token
+            },
+            success: function (result) {
+            },
+            error: function (xhr, status, error) {
+                alert('Error updating status: ' + error);
+            }
+        });
+
+    });
+</script>
