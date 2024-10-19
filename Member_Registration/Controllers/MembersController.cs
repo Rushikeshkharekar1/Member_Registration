@@ -341,6 +341,7 @@ namespace Member_Registration.Controllers
 
             return View();
         }
+
         [HttpPost]
         public IActionResult UpdateIsActive(Guid id, bool isActive)
         {
