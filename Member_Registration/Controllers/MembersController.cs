@@ -296,7 +296,6 @@ namespace Member_Registration.Controllers
 
             using (var memoryStream = new MemoryStream())
             {
-                // Create a PDF document
                 var pdfWriter = new PdfWriter(memoryStream);
                 var pdfDocument = new PdfDocument(pdfWriter);
                 var document = new Document(pdfDocument);
@@ -358,7 +357,6 @@ namespace Member_Registration.Controllers
 
         public IActionResult GenderDistribution()
         {
-            // Fetching the gender counts for all members
             var genderCounts = new
             {
                 Male = _context.ClubMembers.Count(m => m.Gender == 0),
@@ -366,7 +364,6 @@ namespace Member_Registration.Controllers
                 Other = _context.ClubMembers.Count(m => m.Gender == 2)
             };
 
-            // Pass the data to the view via ViewBag
             ViewBag.GenderCounts = genderCounts;
 
             return View();
