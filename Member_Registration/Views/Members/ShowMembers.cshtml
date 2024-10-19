@@ -3,8 +3,8 @@
 <h2>Club Members</h2>
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
-    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>
-    <a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a>
+    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>@* 
+    <a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a> *@
 </div>
 
 <form method="get" asp-action="ShowMembers" class="mb-3">
@@ -44,6 +44,7 @@
 
         <div class="col-md-2">
             <button class="btn btn-primary" type="submit">Search</button>
+            <a href="@Url.Action("ShowMembers")" class="btn btn-secondary">Clear</a>
         </div>
     </div>
 </form>

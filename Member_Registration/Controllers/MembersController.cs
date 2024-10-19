@@ -6,6 +6,7 @@ using OfficeOpenXml;
 using iText.Kernel.Pdf;
 using iText.Layout.Element;
 using iText.Layout;
+using iText.Layout.Properties;
 
 namespace Member_Registration.Controllers
 { 
@@ -300,32 +301,61 @@ namespace Member_Registration.Controllers
                 var pdfDocument = new PdfDocument(pdfWriter);
                 var document = new Document(pdfDocument);
 
-                // Add content to the PDF
-                document.Add(new Paragraph($"Member Name: {member.MemberName}"));
-                document.Add(new Paragraph($"Society: {member.Society?.SocietyName}"));
+                // Add a title
+                var title = new Paragraph("Member Details")
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetFontSize(24)
+                    .SetBold();
 
-                document.Add(new Paragraph("Hobbies:"));
+                document.Add(title);
+
+                // Add a line break
+                document.Add(new Paragraph("\n"));
+
+                // Member Name - Bold the label programmatically
+                document.Add(new Paragraph("Member Name: ").SetBold().Add(member.MemberName).SetFontSize(14));
+
+                // Society
+                document.Add(new Paragraph("Society: ").SetBold().Add(member.Society?.SocietyName ?? "N/A").SetFontSize(14));
+
+                // Hobbies
+                document.Add(new Paragraph("Hobbies: ").SetBold());
                 if (member.ClubMemberHobbies != null && member.ClubMemberHobbies.Any())
                 {
                     foreach (var hobby in member.ClubMemberHobbies)
                     {
-                        document.Add(new Paragraph(hobby.Hobby.HobbyName));
+                        document.Add(new Paragraph($"- {hobby.Hobby.HobbyName}").SetFontSize(12));
                     }
                 }
                 else
                 {
-                    document.Add(new Paragraph("No Hobbies"));
+                    document.Add(new Paragraph("No Hobbies").SetFontSize(12));
                 }
 
-                document.Add(new Paragraph($"Gender: {(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other")}"));
-                document.Add(new Paragraph($"Remarks: {member.Remark}"));
-                document.Add(new Paragraph($"Is Active: {(member.IsActive.HasValue && member.IsActive.Value ? "Yes" : "No")}"));
+                // Gender
+                document.Add(new Paragraph("Gender: ").SetBold()
+                    .Add(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other").SetFontSize(14));
+
+                // Remarks
+                document.Add(new Paragraph("Remarks: ").SetBold().Add(member.Remark ?? "N/A").SetFontSize(14));
+
+                // Is Active
+                document.Add(new Paragraph("Is Active: ").SetBold()
+                    .Add(member.IsActive.HasValue ? (member.IsActive.Value ? "Yes" : "No") : "N/A").SetFontSize(14));
+
+                // Add a footer or additional info if needed
+                document.Add(new Paragraph("\nThank you for using our member registration system!")
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetFontSize(12));
 
                 document.Close();
+
                 var pdfName = $"Member-{member.MemberName}-{DateTime.Now:yyyyMMddHHmmss}.pdf";
                 return File(memoryStream.ToArray(), "application/pdf", pdfName);
             }
         }
+
+
         public IActionResult GenderDistribution()
         {
             // Fetching the gender counts for all members
