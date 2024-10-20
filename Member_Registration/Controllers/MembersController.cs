@@ -7,13 +7,16 @@ using iText.Kernel.Pdf;
 using iText.Layout.Element;
 using iText.Layout;
 using iText.Layout.Properties;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Member_Registration.Controllers
-{ 
+{
+    [Authorize]
     public class MembersController : Controller
     {
+        
         private readonly iBlueAnts_MembersContext _context;
-
+        
         public MembersController(iBlueAnts_MembersContext context)
         {
             _context = context;

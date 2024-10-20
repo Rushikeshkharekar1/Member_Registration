@@ -20,6 +20,7 @@ namespace Member_Registration.Models
         public virtual DbSet<ClubMemberHobby> ClubMemberHobbies { get; set; } = null!;
         public virtual DbSet<Hobby> Hobbies { get; set; } = null!;
         public virtual DbSet<Society> Societies { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -85,6 +86,15 @@ namespace Member_Registration.Models
                     .HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.SocietyName).HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.Property(e => e.Password).HasMaxLength(255);
+
+                entity.Property(e => e.UserName).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

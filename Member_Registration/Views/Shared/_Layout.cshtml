@@ -59,7 +59,13 @@
         </nav>
 
         <div id="page-wrapper" class="gray-bg">
-           
+            <div class="row">
+                <div class="col-md-12 text-right" style="margin: 15px;">
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                        <button type="submit" class="btn btn-danger"><i class="fa fa-sign-out"></i> Logout</button>
+                    </form>
+                </div>
+            </div>
             <!-- Main Content -->
             <div class="wrapper wrapper-content animated fadeInRight">
                 @RenderBody()
