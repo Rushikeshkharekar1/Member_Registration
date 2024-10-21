@@ -75,32 +75,48 @@ namespace Member_Registration.Controllers
                                 .ThenInclude(cmh => cmh.Hobby)
                                 .AsQueryable();
 
+            // Prepare a list for messages
+            List<string> messages = new List<string>();
+
             if (!string.IsNullOrEmpty(memberName))
             {
                 query = query.Where(cm => cm.MemberName.Contains(memberName));
+                messages.Add($"You searched for member name: {memberName}");
             }
 
             if (!string.IsNullOrEmpty(societyName))
             {
                 query = query.Where(cm => cm.Society.SocietyName.Contains(societyName));
+                messages.Add($"You searched for society name: {societyName}");
             }
 
             if (gender.HasValue)
             {
                 query = query.Where(cm => cm.Gender == gender.Value);
+                messages.Add($"You searched for gender: {(gender == 0 ? "Male" : gender == 1 ? "Female" : "Other")}");
             }
 
             if (membershipCategory.HasValue)
             {
                 query = query.Where(cm => cm.MembershipCategory == membershipCategory.Value);
+                messages.Add($"You searched for membership category: {membershipCategory.Value}");
             }
 
             if (isActive.HasValue)
             {
                 query = query.Where(cm => cm.IsActive == isActive.Value);
+                messages.Add($"You searched for active status: {(isActive.Value ? "Yes" : "No")}");
             }
 
             var members = query.ToList();
+
+            // Store messages and search criteria in ViewBag
+            ViewBag.Messages = messages;
+            ViewBag.MemberName = memberName;
+            ViewBag.SocietyName = societyName;
+            ViewBag.Gender = gender;
+            ViewBag.MembershipCategory = membershipCategory;
+            ViewBag.IsActive = isActive;
 
             return View(members);
         }

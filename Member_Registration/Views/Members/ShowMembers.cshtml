@@ -1,6 +1,17 @@
 ﻿@model IEnumerable<Member_Registration.Models.ClubMember>
 
 <h2>Club Members</h2>
+@if (ViewBag.Messages != null)
+{
+    <div id="alert-container">
+        @foreach (var message in ViewBag.Messages)
+        {
+            <div class="alert alert-info">
+                @message
+            </div>
+        }
+    </div>
+}
 
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
@@ -58,6 +69,7 @@
             <th>Society</th>
             <th>Hobby</th>
             <th>Gender</th>
+            <th>Category</th>
             <th>Remarks</th>
             <th>Is Active</th>
             <th>Actions</th>
@@ -85,6 +97,12 @@
                 </td>
                 <td>
                     @(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other")
+                </td>
+                <td>
+                    @(member.MembershipCategory == 1 ? "A" :
+                        member.MembershipCategory == 2 ? "B" :
+                        member.MembershipCategory == 3 ? "C" :
+                        member.MembershipCategory == 4 ? "D" : "Unknown")
                 </td>
 
                 <td>@member.Remark</td>
@@ -129,3 +147,12 @@
 
     });
 </script>
+    <script>
+        // Set a timeout to hide the alert messages after 3 seconds (3000 milliseconds)
+        setTimeout(function () {
+            var alertContainer = document.getElementById("alert-container");
+            if (alertContainer) {
+                alertContainer.style.display = "none";
+            }
+        }, 3000);
+    </script>
