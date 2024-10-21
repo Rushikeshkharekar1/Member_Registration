@@ -174,7 +174,7 @@ namespace Member_Registration.Controllers
                     }
                     _context.SaveChanges();
                 }
-                TempData["SuccessMessage"] = "Member successfully added!";
+                TempData["SuccessMessage"] = "Member added successfully!";
                 return RedirectToAction(nameof(ShowMembers));
             }
 
@@ -268,7 +268,6 @@ namespace Member_Registration.Controllers
 
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Member updated successfully!";
-
                     return RedirectToAction(nameof(ShowMembers));
                 }
                 catch (DbUpdateConcurrencyException)
