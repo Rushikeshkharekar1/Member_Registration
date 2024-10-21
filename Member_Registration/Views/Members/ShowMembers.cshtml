@@ -13,7 +13,14 @@
         }
     </div>
 }
-
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="alert-container">
+        <div class="alert alert-info">
+            @TempData["SuccessMessage"]
+        </div>
+    </div>
+}
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
     <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>
@@ -157,4 +164,12 @@
             alertContainer.style.display = "none";
         }
     }, 3000);
+
+    setTimeout(function () {
+        var alertContainer = document.getElementById("alert-container");
+        if (alertContainer) {
+            alertContainer.style.display = "none";
+        }
+    }, 1000);
+
 </script>

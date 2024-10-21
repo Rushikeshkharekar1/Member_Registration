@@ -174,7 +174,7 @@ namespace Member_Registration.Controllers
                     }
                     _context.SaveChanges();
                 }
-
+                TempData["SuccessMessage"] = "Member successfully added!";
                 return RedirectToAction(nameof(ShowMembers));
             }
 
