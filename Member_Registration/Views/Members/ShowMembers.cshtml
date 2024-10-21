@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Member_Registration.Models.ClubMember>
 
 <h2>Club Members</h2>
+
 @if (ViewBag.Messages != null)
 {
     <div id="alert-container">
@@ -15,9 +16,8 @@
 
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
-    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a> 
+    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>
     <a asp-action="Logout" asp-controller="Account" class="btn btn-danger float-right" style="margin-right: 57px;">Logout</a>
-    @*<a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a> *@
 </div>
 
 <form method="get" asp-action="ShowMembers" class="mb-3">
@@ -87,6 +87,7 @@
                         @foreach (var clubMemberHobby in member.ClubMemberHobbies)
                         {
                             @clubMemberHobby.Hobby.HobbyName
+
                             <br />
                         }
                     }
@@ -95,16 +96,8 @@
                         <span>No Hobbies</span>
                     }
                 </td>
-                <td>
-                    @(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other")
-                </td>
-                <td>
-                    @(member.MembershipCategory == 1 ? "A" :
-                        member.MembershipCategory == 2 ? "B" :
-                        member.MembershipCategory == 3 ? "C" :
-                        member.MembershipCategory == 4 ? "D" : "Unknown")
-                </td>
-
+                <td>@(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other")</td>
+                <td>@(member.MembershipCategory == 1 ? "A" : member.MembershipCategory == 2 ? "B" : member.MembershipCategory == 3 ? "C" : member.MembershipCategory == 4 ? "D" : "Unknown")</td>
                 <td>@member.Remark</td>
                 <td>
                     <label class="switch">
@@ -112,8 +105,6 @@
                         <span class="slider round"></span>
                     </label>
                 </td>
-
-
                 <td>
                     <a asp-action="EditMember" asp-route-id="@member.Id" class="btn btn-warning">Edit</a>
                     <a asp-action="ViewMember" asp-route-id="@member.Id" class="btn btn-info">View</a>
@@ -122,6 +113,18 @@
         }
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @for (var i = 1; i <= Math.Ceiling((double)ViewBag.TotalMembers / ViewBag.PageSize); i++)
+        {
+            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("ShowMembers", new { pageNumber = i, pageSize = ViewBag.PageSize, memberName = Context.Request.Query["memberName"], societyName = Context.Request.Query["societyName"], gender = Context.Request.Query["gender"], membershipCategory = Context.Request.Query["membershipCategory"], isActive = Context.Request.Query["isActive"] })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
@@ -146,13 +149,12 @@
         });
 
     });
+
+    // Set a timeout to hide the alert messages after 3 seconds (3000 milliseconds)
+    setTimeout(function () {
+        var alertContainer = document.getElementById("alert-container");
+        if (alertContainer) {
+            alertContainer.style.display = "none";
+        }
+    }, 3000);
 </script>
-    <script>
-        // Set a timeout to hide the alert messages after 3 seconds (3000 milliseconds)
-        setTimeout(function () {
-            var alertContainer = document.getElementById("alert-container");
-            if (alertContainer) {
-                alertContainer.style.display = "none";
-            }
-        }, 3000);
-    </script>

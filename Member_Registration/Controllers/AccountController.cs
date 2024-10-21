@@ -9,7 +9,7 @@ namespace Member_Registration.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly iBlueAnts_MembersContext _context;
+        private readonly UserAdminDBContext _context;
 
         // AES Encryption Key (padded to 32 characters for AES-256)
         private string encryptionKey = "G0Z3oLNL9O5Kbsr7this";
@@ -24,7 +24,7 @@ namespace Member_Registration.Controllers
         }
 
 
-        public AccountController(iBlueAnts_MembersContext context)
+        public AccountController(UserAdminDBContext context)
         {
             _context = context;
         }
@@ -47,18 +47,18 @@ namespace Member_Registration.Controllers
                 var encryptedUserName = Encrypt(model.UserName);
 
                 // Create the user object with encrypted username and hashed password
-                var user = new User
+                var user = new ClubUser
                 {
-                    Id = Guid.NewGuid(),
+                    ClubUserId = Guid.NewGuid(),
                     UserName = encryptedUserName,
                     Password = hashedPassword
                 };
 
                 // Save user to the database
-                _context.Users.Add(user);
+                _context.ClubUsers.Add(user);
                 _context.SaveChanges();
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Account");
             }
 
             return View(model);
@@ -77,7 +77,7 @@ namespace Member_Registration.Controllers
             if (ModelState.IsValid)
             {
                 // Check user credentials (you already have this logic)
-                var user = _context.Users.FirstOrDefault(u => u.UserName == Encrypt(model.UserName));
+                var user = _context.ClubUsers.FirstOrDefault(u => u.UserName == Encrypt(model.UserName));
                 if (user != null && VerifyPasswordHash(model.Password, user.Password))
                 {
                     // Create the authentication cookie

@@ -12,16 +12,22 @@ namespace Member_Registration
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            // Register the DbContext with a connection string
+            // Register the iBlueAnts_MembersContext with its connection string
             builder.Services.AddDbContext<iBlueAnts_MembersContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            
-            builder.Services.AddAuthentication("MyCookieScheme") // Define your scheme name
-           .AddCookie("MyCookieScheme", options =>
-           {
-                options.LoginPath = "/Account/Login"; // Redirect to login page
-                options.LogoutPath = "/Account/Logout"; // Redirect to logout page
-           });
+
+            // Register the UserAdminDBContext with its connection string
+            builder.Services.AddDbContext<UserAdminDBContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("UserAdminConnection")));
+
+            // Configure authentication
+            builder.Services.AddAuthentication("MyCookieScheme")
+            .AddCookie("MyCookieScheme", options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

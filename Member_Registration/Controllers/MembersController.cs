@@ -8,6 +8,9 @@ using iText.Layout.Element;
 using iText.Layout;
 using iText.Layout.Properties;
 using Microsoft.AspNetCore.Authorization;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using iText.Kernel.Colors;
+using iText.Layout.Borders;
 
 namespace Member_Registration.Controllers
 {
@@ -67,48 +70,42 @@ namespace Member_Registration.Controllers
             }
         }
 
-        public IActionResult ShowMembers(string memberName, string societyName, int? gender, int? membershipCategory, bool? isActive)
+        public IActionResult ShowMembers(int pageNumber = 1, int pageSize = 10, string memberName = null, string societyName = null, int? gender = null, int? membershipCategory = null, bool? isActive = null)
         {
-            var query = _context.ClubMembers
-                                .Include(cm => cm.Society)
-                                .Include(cm => cm.ClubMemberHobbies)
-                                .ThenInclude(cmh => cmh.Hobby)
-                                .AsQueryable();
+            var membersQuery = _context.ClubMembers.AsQueryable();
 
             // Prepare a list for messages
             List<string> messages = new List<string>();
 
             if (!string.IsNullOrEmpty(memberName))
             {
-                query = query.Where(cm => cm.MemberName.Contains(memberName));
+                membersQuery = membersQuery.Where(cm => cm.MemberName.Contains(memberName));
                 messages.Add($"You searched for member name: {memberName}");
             }
 
             if (!string.IsNullOrEmpty(societyName))
             {
-                query = query.Where(cm => cm.Society.SocietyName.Contains(societyName));
+                membersQuery = membersQuery.Where(cm => cm.Society.SocietyName.Contains(societyName));
                 messages.Add($"You searched for society name: {societyName}");
             }
 
             if (gender.HasValue)
             {
-                query = query.Where(cm => cm.Gender == gender.Value);
+                membersQuery = membersQuery.Where(cm => cm.Gender == gender.Value);
                 messages.Add($"You searched for gender: {(gender == 0 ? "Male" : gender == 1 ? "Female" : "Other")}");
             }
 
             if (membershipCategory.HasValue)
             {
-                query = query.Where(cm => cm.MembershipCategory == membershipCategory.Value);
+                membersQuery = membersQuery.Where(cm => cm.MembershipCategory == membershipCategory.Value);
                 messages.Add($"You searched for membership category: {membershipCategory.Value}");
             }
 
             if (isActive.HasValue)
             {
-                query = query.Where(cm => cm.IsActive == isActive.Value);
+                membersQuery = membersQuery.Where(cm => cm.IsActive == isActive.Value);
                 messages.Add($"You searched for active status: {(isActive.Value ? "Yes" : "No")}");
             }
-
-            var members = query.ToList();
 
             // Store messages and search criteria in ViewBag
             ViewBag.Messages = messages;
@@ -117,6 +114,19 @@ namespace Member_Registration.Controllers
             ViewBag.Gender = gender;
             ViewBag.MembershipCategory = membershipCategory;
             ViewBag.IsActive = isActive;
+
+            var totalMembers = membersQuery.Count(); // Count the original query
+            var members = membersQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Include(m => m.Society)
+                .Include(m => m.ClubMemberHobbies)
+                .ThenInclude(ch => ch.Hobby)
+                .ToList(); // Retrieve the members
+
+            ViewBag.TotalMembers = totalMembers;
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.PageSize = pageSize;
 
             return View(members);
         }
@@ -327,42 +337,52 @@ namespace Member_Registration.Controllers
                     .SetBold();
 
                 document.Add(title);
+                document.Add(new Paragraph("\n")); // Add a line break for spacing
 
-                // Add a line break
-                document.Add(new Paragraph("\n"));
+                // Create a table with 2 columns
+                var table = new Table(2);
+                table.SetWidth(UnitValue.CreatePercentValue(100)); // Set table width to 100%
 
-                // Member Name - Bold the label programmatically
-                document.Add(new Paragraph("Member Name: ").SetBold().Add(member.MemberName).SetFontSize(14));
+                // Add rows to the table
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Field").SetBold()));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Details").SetBold()));
+
+                // Member Name
+                table.AddCell("Member Name:");
+                table.AddCell(member.MemberName);
 
                 // Society
-                document.Add(new Paragraph("Society: ").SetBold().Add(member.Society?.SocietyName ?? "N/A").SetFontSize(14));
+                table.AddCell("Society:");
+                table.AddCell(member.Society?.SocietyName ?? "N/A");
 
                 // Hobbies
-                document.Add(new Paragraph("Hobbies: ").SetBold());
+                table.AddCell("Hobbies:");
                 if (member.ClubMemberHobbies != null && member.ClubMemberHobbies.Any())
                 {
-                    foreach (var hobby in member.ClubMemberHobbies)
-                    {
-                        document.Add(new Paragraph($"- {hobby.Hobby.HobbyName}").SetFontSize(12));
-                    }
+                    var hobbies = string.Join(", ", member.ClubMemberHobbies.Select(h => h.Hobby.HobbyName));
+                    table.AddCell(hobbies);
                 }
                 else
                 {
-                    document.Add(new Paragraph("No Hobbies").SetFontSize(12));
+                    table.AddCell("No Hobbies");
                 }
 
                 // Gender
-                document.Add(new Paragraph("Gender: ").SetBold()
-                    .Add(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other").SetFontSize(14));
+                table.AddCell("Gender:");
+                table.AddCell(member.Gender == 0 ? "Male" : member.Gender == 1 ? "Female" : "Other");
 
                 // Remarks
-                document.Add(new Paragraph("Remarks: ").SetBold().Add(member.Remark ?? "N/A").SetFontSize(14));
+                table.AddCell("Remarks:");
+                table.AddCell(member.Remark ?? "N/A");
 
                 // Is Active
-                document.Add(new Paragraph("Is Active: ").SetBold()
-                    .Add(member.IsActive.HasValue ? (member.IsActive.Value ? "Yes" : "No") : "N/A").SetFontSize(14));
+                table.AddCell("Is Active:");
+                table.AddCell(member.IsActive.HasValue ? (member.IsActive.Value ? "Yes" : "No") : "N/A");
 
-                // Add a footer or additional info if needed
+                // Add the table to the document
+                document.Add(table);
+
+                // Add a footer message
                 document.Add(new Paragraph("\nThank you for using our member registration system!")
                     .SetTextAlignment(TextAlignment.CENTER)
                     .SetFontSize(12));
