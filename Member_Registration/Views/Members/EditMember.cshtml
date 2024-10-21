@@ -1,6 +1,11 @@
 ﻿@model Member_Registration.Models.EditMemberViewModel
 
 <h2>Edit Member</h2>
+<div class="mb-3">
+    <a asp-action="Logout" asp-controller="Account" class="btn btn-danger float-right" style="margin-right: 0px; margin-top: -27px;">Logout</a>
+
+    @*<a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a> *@
+</div>
 
 <form asp-action="EditMember" method="post">
     <input type="hidden" asp-for="Id" />

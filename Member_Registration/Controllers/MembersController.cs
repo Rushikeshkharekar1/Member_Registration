@@ -241,6 +241,7 @@ namespace Member_Registration.Controllers
                     }
 
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Member updated successfully!";
 
                     return RedirectToAction(nameof(ShowMembers));
                 }

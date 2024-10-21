@@ -1,10 +1,12 @@
 ﻿@model IEnumerable<Member_Registration.Models.ClubMember>
 
 <h2>Club Members</h2>
+
 <div class="mb-3">
     <a asp-action="AddMember" class="btn btn-success">Add Member</a>
-    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a>@* 
-    <a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a> *@
+    <a asp-action="DownloadExcel" class="btn btn-info">Download as Excel</a> 
+    <a asp-action="Logout" asp-controller="Account" class="btn btn-danger float-right" style="margin-right: 57px;">Logout</a>
+    @*<a asp-action="GenderDistribution" class="btn btn-info">View Gender Distribution</a> *@
 </div>
 
 <form method="get" asp-action="ShowMembers" class="mb-3">
@@ -118,6 +120,7 @@
                 __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // Include the token
             },
             success: function (result) {
+                alert('Is Active succesfully updated');
             },
             error: function (xhr, status, error) {
                 alert('Error updating status: ' + error);
