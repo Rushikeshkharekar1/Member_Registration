@@ -96,7 +96,7 @@ namespace Member_Registration.Controllers
                 }
             }
 
-            ModelState.AddModelError("", "Invalid login attempt.");
+            ModelState.AddModelError("", "Invalid username or password.");
             return View(model);
         }
 

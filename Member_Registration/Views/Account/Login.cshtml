@@ -14,6 +14,9 @@
                 </div>
                 <div class="card-body">
                     <form asp-action="Login" method="post">
+                        <!-- Display validation summary -->
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
                         <div class="form-group mb-3">
                             <label asp-for="UserName" class="form-label">Username</label>
                             <input asp-for="UserName" class="form-control" placeholder="Enter your username" />

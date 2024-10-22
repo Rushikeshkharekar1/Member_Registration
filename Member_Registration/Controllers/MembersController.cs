@@ -98,8 +98,9 @@ namespace Member_Registration.Controllers
             if (membershipCategory.HasValue)
             {
                 membersQuery = membersQuery.Where(cm => cm.MembershipCategory == membershipCategory.Value);
-                messages.Add($"You searched for membership category: {membershipCategory.Value}");
+                messages.Add($"You searched for membership category: {(membershipCategory == 1 ? "A" : membershipCategory == 2 ? "B" : membershipCategory == 3 ? "C" : membershipCategory == 4 ? "D" : "Unknown")}");
             }
+
 
             if (isActive.HasValue)
             {
